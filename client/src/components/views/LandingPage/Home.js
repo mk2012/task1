@@ -1,7 +1,7 @@
 import React from "react";
 
-function LandingPage() {
+function Home() {
   return <div className="app"></div>;
 }
 
-export default LandingPage;
+export default Home;

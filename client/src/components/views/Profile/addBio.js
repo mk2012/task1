@@ -1,23 +1,61 @@
-import React from "react";
-import { Input, Button } from "antd";
+import * as React from "react";
+import { useState } from "react";
+import { Input, Button, message } from "antd";
+import ProfilePage from "./ProfilePage";
+import { Link, useHistory } from "react-router-dom";
+import axios from "axios";
+import { USER_SERVER } from "../../Config";
 
-function addBio() {
+function AddBio() {
   const { TextArea } = Input;
+  const [bio, setBio] = useState(" ");
+  const [myname, setName] = useState("");
+
+  let history = useHistory();
+
+  const handleSubmit = () => {
+    // history.push({
+    //   pathname: "/myprofile",
+    //   state: { detail: bio, state2: name },
+    // });
+    var id = localStorage.getItem("userId");
+    var name = myname;
+    var description = bio;
+    var data = {
+      name,
+      description,
+      id,
+    };
+    axios
+      .post(`${USER_SERVER}/myprofile`, data)
+      .then((res) => {
+        console.log(res.data);
+        message.info("Successfully Updated");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <div>
       <div>
         <h1> Add Bio </h1>
+        <label>Name</label>
+        <Input onChange={(e) => setName(e.target.value)} />
         <TextArea
           style={{ width: "30%", marginTop: "20px", marginRight: "30px" }}
           rows={4}
+          onChange={(e) => setBio(e.target.value)}
         />
       </div>
       <div>
-        <Button style={{ marginTop: "20px" }}>Submit</Button>
+        <Button onClick={handleSubmit} style={{ marginTop: "20px" }}>
+          Submit
+        </Button>
       </div>
     </div>
   );
 }
 
-export default addBio;
+export default AddBio;

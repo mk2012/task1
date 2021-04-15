@@ -1,5 +1,7 @@
 import React from "react";
+import { useEffect } from "react";
 import { Avatar, Upload, message, Button } from "antd";
+import { useLocation } from "react-router-dom";
 import { Link } from "react-router-dom";
 import {
   UploadOutlined,
@@ -26,11 +28,18 @@ const props = {
   },
 };
 
-const ProfilePage = () => {
+const ProfilePage = (props) => {
+  // const location = useLocation();
+  // useEffect(() => {
+  //   console.log(location.pathname); // result: '/secondpage'
+  //   console.log(location.state.detail); // result: 'some_value'
+  // }, [location]);
   return (
     <div>
       <div className="container">
         <Avatar size={128} icon={<UserOutlined />} />
+        {/* <h1>{location.state.state2}</h1>
+        <h2>{location.state.detail} </h2> */}
         <div style={{ display: "flex" }}>
           <Upload {...props}>
             <Button style={{ marginTop: "10px" }}>
