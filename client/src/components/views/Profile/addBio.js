@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 import { Input, Button, message } from "antd";
 import ProfilePage from "./ProfilePage";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, Redirect } from "react-router-dom";
 import axios from "axios";
 import { USER_SERVER } from "../../Config";
 
@@ -27,14 +27,16 @@ function AddBio() {
       id,
     };
     axios
-      .post(`${USER_SERVER}/myprofile`, data)
+      .post(`${USER_SERVER}/myprofile/${id}`, data)
       .then((res) => {
         console.log(res.data);
-        message.info("Successfully Updated");
       })
       .catch((err) => {
+        message.info("Update Failed");
         console.log(err);
       });
+    message.info("Successfully Updated");
+    history.push({ pathname: "/myprofile" });
   };
 
   return (

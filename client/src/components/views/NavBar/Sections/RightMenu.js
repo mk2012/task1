@@ -9,10 +9,12 @@ import { useSelector } from "react-redux";
 function RightMenu(props) {
   const user = useSelector((state) => state.user);
   const isloggedin = localStorage.getItem("userId");
+  console.log(isloggedin);
 
   const logoutHandler = () => {
     axios.get(`${USER_SERVER}/logout`).then((response) => {
       if (response.status === 200) {
+        localStorage.removeItem("userId");
         props.history.push("/login");
       } else {
         alert("Log Out Failed");
@@ -20,7 +22,7 @@ function RightMenu(props) {
     });
   };
 
-  if (user.userData && !user.userData.isAuth && !isloggedin) {
+  if (user.userData && !user.userData.isAuth && isloggedin == null) {
     return (
       <Menu mode={props.mode}>
         <Menu.Item key="mail">

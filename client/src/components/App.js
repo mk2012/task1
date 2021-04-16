@@ -22,15 +22,15 @@ function App() {
       <NavBar />
       <div style={{ paddingTop: "69px", minHeight: "calc(100vh - 80px)" }}>
         <Switch>
-          <Route exact path="/">
-            {isloggedin ? <Redirect to="/" /> : <LandingPage />}
-            {Auth(LandingPage, null)}
-          </Route>
           <Route exact path="/login" component={Auth(LoginPage, false)} />
           <Route exact path="/register" component={Auth(RegisterPage, false)} />
           <Route exact path="/myprofile" component={Auth(ProfilePage, false)} />
-          <Route exact path="/home" component={Auth(Home, false)} />
+          {/* <Route exact path="/" component={Auth(Home, false)} /> */}
           <Route exact path="/myprofile/bio" component={Auth(AddBio, false)} />
+          <Route exact path="/">
+            {isloggedin ? <Redirect to="/" /> : <LandingPage />}
+            {/* {Auth(LandingPage, null)} */}
+          </Route>
         </Switch>
       </div>
       <Footer />

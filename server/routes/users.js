@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const { User } = require("../models/User");
-// const {UserBio} = require("../models/UserBio");
 
 const { auth } = require("../middleware/auth");
 
@@ -22,6 +21,7 @@ router.get("/auth", auth, (req, res) => {
   });
 });
 
+//Register
 router.post("/register", (req, res) => {
   const user = new User(req.body);
 
@@ -33,22 +33,31 @@ router.post("/register", (req, res) => {
   });
 });
 
-router.post("/myprofile", (req, res) => {
-  // const { name, description } = req.body;
+//Bio
+router.post("/myprofile/:id", (req, res) => {
+  let { name, description } = req.body;
   const user = User.findById(req.body.id);
+  user
+    .updateOne({
+      bioName: name !== undefined ? name : user.bioName,
+      description: description !== undefined ? description : user.description,
+    })
+    .exec();
+});
 
-  user.bioName = req.body.name;
-  user.description = req.body.description;
-  console.log(user.bioName);
-
-  user.save((err, doc) => {
-    if (err) return res.json({ success: false, err });
-    return res.status(200).json({
-      success: true,
-    });
+//Get Bio
+router.get("/myprofile/:id", async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (!user) return res.json({ success: false, err });
+  return res.status(200).json({
+    name: user.bioName,
+    description: user.description,
+    success: true,
+    token: user.token,
   });
 });
 
+//Login
 router.post("/login", (req, res) => {
   User.findOne({ email: req.body.email }, (err, user) => {
     if (!user)
@@ -73,6 +82,7 @@ router.post("/login", (req, res) => {
   });
 });
 
+//Logout
 router.get("/logout", auth, (req, res) => {
   User.findOneAndUpdate(
     { _id: req.user._id },

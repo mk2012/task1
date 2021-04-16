@@ -44,6 +44,17 @@ input.error {
   justify-content: flex-start;
   align-items: center;
   width: 100%;
-
   flex-direction: column;
+}
+
+.profile-container {
+  height: 430px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 400px;
+  margin-top: 30px;
+  background-color: white;
+  border: 2px solid rgb(134, 125, 125);
 }
