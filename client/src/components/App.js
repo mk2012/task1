@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import Auth from "../hoc/auth";
 // pages for this product
@@ -17,20 +17,18 @@ import Home from "./views/LandingPage/Home";
 
 function App() {
   const isloggedin = localStorage.getItem("userId");
+  useEffect(() => {}, []);
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <NavBar />
       <div style={{ paddingTop: "69px", minHeight: "calc(100vh - 80px)" }}>
         <Switch>
-          <Route exact path="/login" component={Auth(LoginPage, false)} />
-          <Route exact path="/register" component={Auth(RegisterPage, false)} />
-          <Route exact path="/myprofile" component={Auth(ProfilePage, false)} />
-          {/* <Route exact path="/" component={Auth(Home, false)} /> */}
-          <Route exact path="/myprofile/bio" component={Auth(AddBio, false)} />
-          <Route exact path="/">
-            {isloggedin ? <Redirect to="/" /> : <LandingPage />}
-            {/* {Auth(LandingPage, null)} */}
-          </Route>
+          <Route path="/login" component={Auth(LoginPage, false)} />
+          <Route path="/register" component={Auth(RegisterPage, false)} />
+          <Route path="/myprofile" component={Auth(ProfilePage, false)} />
+          <Route path="/myprofile/bio" component={Auth(AddBio, false)} />
+          <Route path="/home" component={Auth(Home, false)} />
+          <Route path="/" component={Auth(LandingPage, false)} />
         </Switch>
       </div>
       <Footer />

@@ -36,17 +36,20 @@ const ProfilePage = (props) => {
   const [name, setName] = useState("");
   const [bio, setBio] = useState("");
   useEffect(() => {
-    axios
-      .get(`${USER_SERVER}/myprofile/${id}`)
-      .then((res) => {
-        console.log(res.data);
-        setName(res.data.name);
-        setBio(res.data.description);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    axios.post();
+    async function getName() {
+      await axios
+        .get(`${USER_SERVER}/myprofile/${id}`)
+        .then((res) => {
+          console.log(res.data);
+          setName(res.data.name);
+          setBio(res.data.description);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    getName();
   }, [name, bio]);
   return (
     <div>

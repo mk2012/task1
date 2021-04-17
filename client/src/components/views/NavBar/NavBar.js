@@ -5,7 +5,7 @@ import { Drawer, Button, Icon } from "antd";
 import "./Sections/Navbar.css";
 import { Link } from "react-router-dom";
 
-function NavBar() {
+const NavBar = () => {
   const [visible, setVisible] = useState(false);
 
   const showDrawer = () => {
@@ -76,7 +76,7 @@ function NavBar() {
           }}
           className="menu_left"
         >
-          <Link to="/">
+          <Link to="/home">
             <Button>Home</Button>
           </Link>
 
@@ -108,6 +108,6 @@ function NavBar() {
       </div>
     </nav>
   );
-}
+};
 
 export default NavBar;

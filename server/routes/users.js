@@ -21,6 +21,26 @@ router.get("/auth", auth, (req, res) => {
   });
 });
 
+//get users data
+
+router.get("/users", async (req, res) => {
+  try {
+    const users = await User.find();
+    if (users) {
+      console.log("###", users);
+      return res.status(200).json(
+        users.map((u) => {
+          return u;
+        })
+      );
+    } else {
+      res.status(404);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 //Register
 router.post("/register", (req, res) => {
   const user = new User(req.body);
@@ -34,9 +54,9 @@ router.post("/register", (req, res) => {
 });
 
 //Bio
-router.post("/myprofile/:id", (req, res) => {
+router.post("/myprofile/:id", async (req, res) => {
   let { name, description } = req.body;
-  const user = User.findById(req.body.id);
+  const user = await User.findById(req.body.id);
   user
     .updateOne({
       bioName: name !== undefined ? name : user.bioName,
@@ -50,6 +70,7 @@ router.get("/myprofile/:id", async (req, res) => {
   const user = await User.findById(req.params.id);
   if (!user) return res.json({ success: false, err });
   return res.status(200).json({
+    oname: user.name,
     name: user.bioName,
     description: user.description,
     success: true,

@@ -1,14 +1,18 @@
-import React, { useState } from "react";
-import { withRouter, Router } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { withRouter, Router, useHistory } from "react-router-dom";
 import { loginUser } from "../../../_actions/user_actions";
 import { Formik } from "formik";
 import * as Yup from "yup";
 import { Form, Icon, Input, Button, Checkbox, Typography } from "antd";
 import { useDispatch } from "react-redux";
+import { USER_SERVER } from "../../Config";
+import axios from "axios";
 
 const { Title } = Typography;
 
 function LoginPage(props) {
+  const history = useHistory();
+  const [token, setToken] = useState("");
   const dispatch = useDispatch();
   const rememberMeChecked = localStorage.getItem("rememberMe") ? true : false;
 
@@ -22,6 +26,17 @@ function LoginPage(props) {
   const initialEmail = localStorage.getItem("rememberMe")
     ? localStorage.getItem("rememberMe")
     : "";
+
+  // const getToken = ()=>{
+  // useEffect(()=>{
+  //   axios.get(`${USER_SERVER}/myprofile/${id}`)
+  //     .then(res=>{
+  //        setToken(res.data.token);
+  //       console.log(token);
+  //     }
+
+  // },[])
+  // }
 
   return (
     <Formik
@@ -53,7 +68,13 @@ function LoginPage(props) {
                 } else {
                   localStorage.removeItem("rememberMe");
                 }
-                props.history.push("/");
+
+                //   history.push({
+                //     pathname: "/home",
+                //     state: { details: "token" },
+                //   });
+                // });
+                props.history.push("/home");
               } else {
                 setFormErrorMessage("Check out your Account or Password again");
               }

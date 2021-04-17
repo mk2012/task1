@@ -1,8 +1,8 @@
 import * as React from "react";
 import { useState } from "react";
 import { Input, Button, message } from "antd";
-import ProfilePage from "./ProfilePage";
-import { Link, useHistory, Redirect } from "react-router-dom";
+
+import { useHistory } from "react-router-dom";
 import axios from "axios";
 import { USER_SERVER } from "../../Config";
 
