@@ -27,7 +27,7 @@ router.get("/users", async (req, res) => {
   try {
     const users = await User.find();
     if (users) {
-      console.log("###", users);
+      // console.log("###", users);
       return res.status(200).json(
         users.map((u) => {
           return u;
@@ -56,7 +56,7 @@ router.post("/register", (req, res) => {
 //Bio
 router.post("/myprofile/:id", async (req, res) => {
   let { name, description } = req.body;
-  const user = await User.findById(req.body.id);
+  const user = await User.findById(req.params.id);
   user
     .updateOne({
       bioName: name !== undefined ? name : user.bioName,
@@ -75,6 +75,7 @@ router.get("/myprofile/:id", async (req, res) => {
     description: user.description,
     success: true,
     token: user.token,
+    likedIds: user.likedProfileIds,
   });
 });
 

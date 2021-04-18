@@ -50,7 +50,7 @@ const ProfilePage = (props) => {
     }
 
     getName();
-  }, [name, bio]);
+  }, [ProfilePage]);
   return (
     <div>
       <div className="container">

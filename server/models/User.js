@@ -39,6 +39,9 @@ const userSchema = mongoose.Schema({
   description: {
     type: String,
   },
+  likedProfileIds: {
+    type: Array,
+  },
 });
 
 userSchema.pre("save", function (next) {

@@ -10,6 +10,7 @@ import Footer from "./views/Footer/Footer";
 import ProfilePage from "./views/Profile/ProfilePage";
 import AddBio from "./views/Profile/addBio";
 import Home from "./views/LandingPage/Home";
+import LikedProfiles from "../components/views/Profile/LikedProfiles";
 
 //null   Anyone Can go inside
 //true   only logged in user can go inside
@@ -24,9 +25,11 @@ function App() {
       <div style={{ paddingTop: "69px", minHeight: "calc(100vh - 80px)" }}>
         <Switch>
           <Route path="/login" component={Auth(LoginPage, false)} />
+          <Route path="/likedprofiles" component={Auth(LikedProfiles, false)} />
           <Route path="/register" component={Auth(RegisterPage, false)} />
-          <Route path="/myprofile" component={Auth(ProfilePage, false)} />
           <Route path="/myprofile/bio" component={Auth(AddBio, false)} />
+          <Route path="/myprofile" component={Auth(ProfilePage, false)} />
+
           <Route path="/home" component={Auth(Home, false)} />
           <Route path="/" component={Auth(LandingPage, false)} />
         </Switch>
