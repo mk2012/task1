@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { User } = require("../models/User");
+const { UserAction } = require("../models/UserAction");
 
 const { auth } = require("../middleware/auth");
 
@@ -24,15 +25,46 @@ router.get("/auth", auth, (req, res) => {
 //get users data
 
 router.get("/users", async (req, res) => {
+  let currentUserId = req.query.userId;
   try {
     const users = await User.find();
-    if (users) {
+    let notLikedUsers = [];
+    await Promise.all(
+      users.map(async (user) => {
+        const alreadyLiked = await UserAction.find({
+          likedBy: currentUserId,
+          likedFor: user._id,
+        });
+        if (alreadyLiked.length === 0) {
+          notLikedUsers.push(user);
+        }
+      })
+    );
+    if (notLikedUsers) {
       // console.log("###", users);
-      return res.status(200).json(
-        users.map((u) => {
-          return u;
-        })
-      );
+      return res.status(200).json(notLikedUsers);
+    } else {
+      res.status(404);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+//
+router.get("/users/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    console.log(user);
+    if (user) {
+      console.log("********", user, "*******");
+      return res.status(200).json({
+        oname: user.name,
+        name: user.bioName,
+        description: user.description,
+        success: true,
+        token: user.token,
+      });
     } else {
       res.status(404);
     }
@@ -75,7 +107,6 @@ router.get("/myprofile/:id", async (req, res) => {
     description: user.description,
     success: true,
     token: user.token,
-    likedIds: user.likedProfileIds,
   });
 });
 
@@ -102,6 +133,37 @@ router.post("/login", (req, res) => {
       });
     });
   });
+});
+
+// post Liked profiles
+
+router.post("/useraction/", async (req, res) => {
+  let { senderId, recieverId, action } = req.body;
+
+  const useraction = new UserAction({
+    likedBy: senderId,
+    likedFor: recieverId,
+    action: action,
+  });
+
+  useraction.save((err, doc) => {
+    if (err.code === 11000)
+      return res.status(422).json({ success: false, err: "DUPLICATE_ENTRY" });
+    if (err) return res.json({ success: false, err });
+    return res.status(200).json({
+      success: true,
+    });
+  });
+});
+
+//get liked profiles
+router.get("/useraction/", async (req, res) => {
+  const useraction = await UserAction.find().populate({
+    path: "likedFor",
+    select: "-password",
+  });
+  if (!useraction) return res.json({ success: false, err });
+  return res.status(200).json(useraction);
 });
 
 //Logout

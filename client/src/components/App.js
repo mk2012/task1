@@ -29,7 +29,6 @@ function App() {
           <Route path="/register" component={Auth(RegisterPage, false)} />
           <Route path="/myprofile/bio" component={Auth(AddBio, false)} />
           <Route path="/myprofile" component={Auth(ProfilePage, false)} />
-
           <Route path="/home" component={Auth(Home, false)} />
           <Route path="/" component={Auth(LandingPage, false)} />
         </Switch>

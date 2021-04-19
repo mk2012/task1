@@ -1,43 +1,49 @@
 import * as React from "react";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Avatar, Button } from "antd";
+import { Avatar, Button, message } from "antd";
 import { UserOutlined, LikeOutlined, DislikeOutlined } from "@ant-design/icons";
 import { USER_SERVER } from "../../../components/Config";
+import DisplayProfile from "../../DisplayProfile";
 
 let userData = [];
+let act = "";
 
 const Home = () => {
   const [name, setName] = useState("");
 
-  const id = localStorage.getItem("userId");
   useEffect(() => {
     const id = localStorage.getItem("userId");
+    const getUsers = async () => {
+      await axios.get(`${USER_SERVER}/users?userId=${id}`).then((res) => {
+        userData = res.data;
+      });
+    };
     const getName = async () => {
       let response = await axios.get(`${USER_SERVER}/myprofile/${id}`);
       response = await response.data.oname;
       setName(response);
     };
-    const getUsers = async () => {
-      await axios.get(`${USER_SERVER}/users`).then((res) => {
-        userData = res.data;
-      });
-    };
 
     getUsers();
     getName();
   }, []);
-  // var profileId = [];
 
-  // const sendId = async (user) => {
-  //   profileId = user._id;
-  //   console.log(profileId);
-  //   await axios
-  //     .post(`${USER_SERVER}/myprofile/${id}`, profileId)
-  //     .then((res) => {
-  //       console.log(res.data);
-  //     });
-  // }
+  const sendId = async (user, act) => {
+    const senderId = localStorage.getItem("userId");
+    var recieverId = user._id;
+    var data = { recieverId, senderId, action: act };
+    await axios
+      .post(`${USER_SERVER}/useraction/`, data)
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err.response.data.err);
+        message.error(err.response.data.err);
+      });
+  };
+
   return (
     <div>
       <div style={{ textAlign: "center", marginTop: "10px" }}>
@@ -47,25 +53,10 @@ const Home = () => {
         {userData.map((user) => {
           if (name !== user.name)
             return (
-              <div className="home-profile-container" key={user._id}>
-                <Avatar size={64} icon={<UserOutlined />} />
-                <h1>{user.name} </h1> <h4> {user.description}</h4>
-                <div className="icon-container">
-                  <Button
-                  // onClick={() => {
-                  //   sendId(user);
-                  // }}
-                  >
-                    <LikeOutlined
-                      className="like-btn"
-                      style={{ fontSize: "30px" }}
-                    />
-                  </Button>
-                  <Button>
-                    <DislikeOutlined style={{ fontSize: "30px" }} />
-                  </Button>
-                </div>
-              </div>
+              <DisplayProfile
+                user={user}
+                sendId={(user, action) => sendId(user, action)}
+              />
             );
         })}
       </div>
