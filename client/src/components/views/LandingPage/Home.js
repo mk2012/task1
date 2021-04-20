@@ -6,17 +6,17 @@ import { UserOutlined, LikeOutlined, DislikeOutlined } from "@ant-design/icons";
 import { USER_SERVER } from "../../../components/Config";
 import DisplayProfile from "../../DisplayProfile";
 
-let userData = [];
 let act = "";
 
 const Home = () => {
   const [name, setName] = useState("");
+  const [userData, setUserData] = useState([]);
 
   useEffect(() => {
     const id = localStorage.getItem("userId");
     const getUsers = async () => {
       await axios.get(`${USER_SERVER}/users?userId=${id}`).then((res) => {
-        userData = res.data;
+        setUserData(res.data);
       });
     };
     const getName = async () => {
@@ -39,8 +39,8 @@ const Home = () => {
         console.log(res.data);
       })
       .catch((err) => {
-        console.log(err.response.data.err);
-        message.error(err.response.data.err);
+        console.log(err);
+        // message.error(err.response.data.err);
       });
   };
 

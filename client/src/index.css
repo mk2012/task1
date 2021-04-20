@@ -48,7 +48,7 @@ input.error {
 }
 
 .profile-container {
-  height: 430px;
+  height: 420px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -90,4 +90,24 @@ input.error {
   margin: 15px;
   width: 40%;
   justify-content: space-around;
+}
+
+.fav-btn-contanier {
+  background-color: palevioletred;
+  color: red;
+  height: 50px;
+}
+
+.containers {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  height: auto;
+}
+
+.profile-containers {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 15px;
 }

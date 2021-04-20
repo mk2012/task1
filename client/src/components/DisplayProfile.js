@@ -1,40 +1,54 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { USER_SERVER } from "./Config";
 import axios from "axios";
-import { USER_SERVER } from "../components/Config";
-import { Avatar, Button } from "antd";
+import { Avatar, Button, message } from "antd";
 import { UserOutlined, LikeOutlined, DislikeOutlined } from "@ant-design/icons";
 
 const id = localStorage.getItem("userId");
-const DisplayProfile = ({ user, sendId }) => {
-  // const [profiledata, setProfileData] = useState([]);
-
-  // const getData = async (d) => {
-  //   let id = d.likedFor;
-  //   await axios.get(`${USER_SERVER}/users/${id}`).then((res) => {
-  //     setProfileData(...profiledata, res.data);
-  //   });
-  // };
-
+const DisplayProfile = ({ user, sendId, likedProfile }) => {
+  const removeProfile = async (user) => {
+    await axios
+      .delete(`${USER_SERVER}/useraction?userId=${id}&deletedId=${user._id}`)
+      .then((res) => {
+        console.log(res.data);
+        message.info("Profile removed");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   return (
     <div className="home-profile-container" key={user._id}>
       <Avatar size={64} icon={<UserOutlined />} />
       <h1>{user.name} </h1> <h4> {user.description}</h4>
       <div className="icon-container">
-        <Button
-          onClick={() => {
-            sendId(user, "liked");
-          }}
-        >
-          <LikeOutlined className="like-btn" style={{ fontSize: "30px" }} />
-        </Button>
-        <Button
-          onClick={() => {
-            sendId(user, "disliked");
-          }}
-        >
-          <DislikeOutlined style={{ fontSize: "30px" }} />
-        </Button>
+        {!likedProfile ? (
+          <>
+            <Button
+              onClick={() => {
+                sendId(user, "liked");
+              }}
+            >
+              <LikeOutlined className="like-btn" style={{ fontSize: "30px" }} />
+            </Button>
+            <Button
+              onClick={() => {
+                sendId(user, "disliked");
+              }}
+            >
+              <DislikeOutlined style={{ fontSize: "30px" }} />
+            </Button>
+          </>
+        ) : (
+          <Button
+            onClick={() => {
+              removeProfile(user);
+            }}
+            style={{ backgroundColor: "#191970", color: "white" }}
+          >
+            Remove
+          </Button>
+        )}
       </div>
     </div>
   );

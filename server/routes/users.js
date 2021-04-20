@@ -34,6 +34,7 @@ router.get("/users", async (req, res) => {
         const alreadyLiked = await UserAction.find({
           likedBy: currentUserId,
           likedFor: user._id,
+          action: "liked",
         });
         if (alreadyLiked.length === 0) {
           notLikedUsers.push(user);
@@ -41,7 +42,6 @@ router.get("/users", async (req, res) => {
       })
     );
     if (notLikedUsers) {
-      // console.log("###", users);
       return res.status(200).json(notLikedUsers);
     } else {
       res.status(404);
@@ -57,7 +57,7 @@ router.get("/users/:id", async (req, res) => {
     const user = await User.findById(req.params.id);
     console.log(user);
     if (user) {
-      console.log("********", user, "*******");
+      // console.log("********", user, "*******");
       return res.status(200).json({
         oname: user.name,
         name: user.bioName,
@@ -147,8 +147,8 @@ router.post("/useraction/", async (req, res) => {
   });
 
   useraction.save((err, doc) => {
-    if (err.code === 11000)
-      return res.status(422).json({ success: false, err: "DUPLICATE_ENTRY" });
+    // if (err.code === 11000)
+    //   return res.status(422).json({ success: false, err: "DUPLICATE_ENTRY" });
     if (err) return res.json({ success: false, err });
     return res.status(200).json({
       success: true,
@@ -158,12 +158,29 @@ router.post("/useraction/", async (req, res) => {
 
 //get liked profiles
 router.get("/useraction/", async (req, res) => {
-  const useraction = await UserAction.find().populate({
+  let currentUserId = req.query.userId;
+  const useraction = await UserAction.find({
+    likedBy: currentUserId,
+    action: "liked",
+  }).populate({
     path: "likedFor",
     select: "-password",
   });
+  console.log(useraction);
   if (!useraction) return res.json({ success: false, err });
   return res.status(200).json(useraction);
+});
+
+//delete liked profile
+
+router.delete("/useraction", async (req, res) => {
+  let currentUserId = req.query.userId;
+  let deletedId = req.query.deletedId;
+  const useraction = await UserAction.findOneAndDelete({
+    likedBy: currentUserId,
+    likedFor: deletedId,
+  });
+  return res.status(200);
 });
 
 //Logout

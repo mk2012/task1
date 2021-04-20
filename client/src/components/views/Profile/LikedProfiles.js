@@ -5,14 +5,11 @@ import DisplayProfile from "../../DisplayProfile";
 
 const LikedProfiles = () => {
   const [likedprofiles, setLikedProfiles] = useState([]);
-  const [data, setData] = useState([]);
-  const [name, setName] = useState([]);
-
   useEffect(() => {
     const id = localStorage.getItem("userId");
     const getLikedProfiles = async () => {
       await axios
-        .get(`${USER_SERVER}/useraction`)
+        .get(`${USER_SERVER}/useraction?userId=${id}`)
         .then((res) => {
           setLikedProfiles(res.data);
         })
@@ -24,24 +21,6 @@ const LikedProfiles = () => {
     getLikedProfiles();
   }, []);
 
-  // useEffect(() => {
-  //   likedprofile.map((user) => {
-  //       let thisUserId = localStorage.getItem("userId");
-
-  //       const getLikedUsers = async () => {
-  //         let id = user.likedFor;
-  //         if (thisUserId == user.likedBy)
-  //           await axios.get(`${USER_SERVER}/users/${id}`).then((res) => {
-  //             console.log(res.data);
-  //             setData(res.data.description);
-  //             setName(res.data.oname);
-  //           });
-  //       };
-  //       getLikedUsers();
-  //     },
-  //     [LikedProfiles]
-  //   );
-  // });
   const sendId = async (user, act) => {
     const senderId = localStorage.getItem("userId");
     var recieverId = user.likedFor;
@@ -55,15 +34,37 @@ const LikedProfiles = () => {
         console.log(err);
       });
   };
+  // const senderId = localStorage.getItem("userId");
 
+  // const removeProfile=async(id)=>{
+  //   let removeUserId = id;
+  // await axios.delete(`${USER_SERVER}/useraction/${removeUserId}`)
+  // .then(res=>{
+  //   console.log(res.data);
+  // })
+  // }
   return (
-    <div>
+    <div className="containers">
+      <div
+        style={{
+          textAlign: "center",
+          marginTop: "15px",
+          display: "flex",
+          justifyContent: "center",
+          width: "100% ",
+        }}
+      >
+        <h1> Your Favourite Profiles </h1>
+      </div>
       {likedprofiles.map((user) => {
         return (
-          <DisplayProfile
-            user={user.likedFor}
-            sendId={(user, action) => sendId(user, action)}
-          />
+          <div className="profile-containers">
+            <DisplayProfile
+              likedProfile={true}
+              user={user.likedFor}
+              sendId={(user, action) => sendId(user, action)}
+            />
+          </div>
         );
       })}
     </div>

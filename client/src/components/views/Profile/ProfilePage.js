@@ -10,6 +10,7 @@ import {
   UserOutlined,
   EditOutlined,
   CameraOutlined,
+  HeartFilled,
 } from "@ant-design/icons";
 
 const id = localStorage.getItem("userId");
@@ -50,7 +51,7 @@ const ProfilePage = (props) => {
     }
 
     getName();
-  }, [ProfilePage]);
+  }, []);
   return (
     <div>
       <div className="container">
@@ -67,6 +68,19 @@ const ProfilePage = (props) => {
             <Link to="/myprofile/bio">
               <Button style={{ marginTop: "10px", marginLeft: "10px" }}>
                 {<EditOutlined />} Bio
+              </Button>
+            </Link>
+          </div>
+          <div style={{ marginTop: "25px", width: "80%" }}>
+            <Link to="likedprofiles">
+              <Button
+                style={{
+                  width: "100%",
+                  backgroundColor: "palevioletred",
+                  color: "white",
+                }}
+              >
+                {<HeartFilled />} Favourites
               </Button>
             </Link>
           </div>
