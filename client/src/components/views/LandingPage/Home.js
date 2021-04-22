@@ -1,8 +1,6 @@
 import * as React from "react";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Avatar, Button, message } from "antd";
-import { UserOutlined, LikeOutlined, DislikeOutlined } from "@ant-design/icons";
 import { USER_SERVER } from "../../../components/Config";
 import DisplayProfile from "../../DisplayProfile";
 
@@ -12,19 +10,21 @@ const Home = () => {
   const [name, setName] = useState("");
   const [userData, setUserData] = useState([]);
 
-  useEffect(() => {
+  const getUsers = async () => {
     const id = localStorage.getItem("userId");
-    const getUsers = async () => {
-      await axios.get(`${USER_SERVER}/users?userId=${id}`).then((res) => {
-        setUserData(res.data);
-      });
-    };
-    const getName = async () => {
-      let response = await axios.get(`${USER_SERVER}/myprofile/${id}`);
-      response = await response.data.oname;
-      setName(response);
-    };
+    await axios.get(`${USER_SERVER}/users?userId=${id}`).then((res) => {
+      setUserData(res.data);
+    });
+  };
 
+  const getName = async () => {
+    const id = localStorage.getItem("userId");
+    let response = await axios.get(`${USER_SERVER}/myprofile/${id}`);
+    response = await response.data.oname;
+    setName(response);
+  };
+
+  useEffect(() => {
     getUsers();
     getName();
   }, []);
@@ -37,6 +37,7 @@ const Home = () => {
       .post(`${USER_SERVER}/useraction/`, data)
       .then((res) => {
         console.log(res.data);
+        getUsers();
       })
       .catch((err) => {
         console.log(err);
@@ -50,15 +51,19 @@ const Home = () => {
         <h1> Welcome {name} </h1>
       </div>
       <div className="home-container">
-        {userData.map((user) => {
+        {/* {userData.map((user) => {
           if (name !== user.name)
-            return (
-              <DisplayProfile
-                user={user}
-                sendId={(user, action) => sendId(user, action)}
-              />
-            );
-        })}
+            return ( */}
+        {userData.length !== 0 ? (
+          <DisplayProfile
+            user={userData[0]}
+            sendId={(user, action) => sendId(user, action)}
+          />
+        ) : (
+          <div>No Users Found</div>
+        )}
+        {/* );
+        })} */}
       </div>
     </div>
   );

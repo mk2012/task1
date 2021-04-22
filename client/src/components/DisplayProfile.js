@@ -8,7 +8,7 @@ const id = localStorage.getItem("userId");
 const DisplayProfile = ({ user, sendId, likedProfile }) => {
   const removeProfile = async (user) => {
     await axios
-      .delete(`${USER_SERVER}/useraction?userId=${id}&deletedId=${user._id}`)
+      .delete(`${USER_SERVER}/useraction?userId=${id}&deletedId=${user?._id}`)
       .then((res) => {
         console.log(res.data);
         message.info("Profile removed");
@@ -17,26 +17,37 @@ const DisplayProfile = ({ user, sendId, likedProfile }) => {
         console.log(err);
       });
   };
+
   return (
-    <div className="home-profile-container" key={user._id}>
+    <div className="home-profile-container" key={user?._id}>
       <Avatar size={64} icon={<UserOutlined />} />
-      <h1>{user.name} </h1> <h4> {user.description}</h4>
+      <h1>{user?.name} </h1> <h4> {user?.description}</h4>
       <div className="icon-container">
         {!likedProfile ? (
           <>
             <Button
+              style={{
+                backgroundColor: "#399B16",
+                color: "white",
+                width: "80px",
+              }}
               onClick={() => {
                 sendId(user, "liked");
               }}
             >
-              <LikeOutlined className="like-btn" style={{ fontSize: "30px" }} />
+              Like
             </Button>
             <Button
+              style={{
+                backgroundColor: "#EA0A19",
+                color: "white",
+                width: "80px",
+              }}
               onClick={() => {
                 sendId(user, "disliked");
               }}
             >
-              <DislikeOutlined style={{ fontSize: "30px" }} />
+              Dislike
             </Button>
           </>
         ) : (

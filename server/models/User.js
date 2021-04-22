@@ -39,6 +39,9 @@ const userSchema = mongoose.Schema({
   description: {
     type: String,
   },
+  priority: {
+    type: Number,
+  },
 });
 
 userSchema.pre("save", function (next) {

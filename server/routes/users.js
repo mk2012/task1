@@ -27,7 +27,7 @@ router.get("/auth", auth, (req, res) => {
 router.get("/users", async (req, res) => {
   let currentUserId = req.query.userId;
   try {
-    const users = await User.find();
+    const users = await User.find().sort({ priority: 1 }).exec();
     let notLikedUsers = [];
     await Promise.all(
       users.map(async (user) => {
@@ -36,7 +36,7 @@ router.get("/users", async (req, res) => {
           likedFor: user._id,
           action: "liked",
         });
-        if (alreadyLiked.length === 0) {
+        if (alreadyLiked.length === 0 && user._id != currentUserId) {
           notLikedUsers.push(user);
         }
       })
@@ -145,6 +145,18 @@ router.post("/useraction/", async (req, res) => {
     likedFor: recieverId,
     action: action,
   });
+
+  if (action == "disliked") {
+    const users = await User.find();
+    let newPriority = users.length;
+    User.findOneAndUpdate(
+      { _id: recieverId },
+      { priority: newPriority },
+      (err, doc) => {
+        if (err) return res.json({ success: false, err });
+      }
+    );
+  }
 
   useraction.save((err, doc) => {
     // if (err.code === 11000)
