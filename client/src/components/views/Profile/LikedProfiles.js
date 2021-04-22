@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { USER_SERVER } from "../../Config";
 import axios from "axios";
 import DisplayProfile from "../../DisplayProfile";
+import { message } from "antd";
 
 const LikedProfiles = () => {
   const [likedprofiles, setLikedProfiles] = useState([]);
@@ -28,21 +29,14 @@ const LikedProfiles = () => {
     await axios
       .post(`${USER_SERVER}/useraction/`, data)
       .then((res) => {
+        message.success("Added to Favourites");
         console.log(res.data);
       })
       .catch((err) => {
         console.log(err);
       });
   };
-  // const senderId = localStorage.getItem("userId");
 
-  // const removeProfile=async(id)=>{
-  //   let removeUserId = id;
-  // await axios.delete(`${USER_SERVER}/useraction/${removeUserId}`)
-  // .then(res=>{
-  //   console.log(res.data);
-  // })
-  // }
   return (
     <div className="containers">
       <div

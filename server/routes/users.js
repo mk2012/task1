@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { User } = require("../models/User");
 const { UserAction } = require("../models/UserAction");
+const { MutualProfiles } = require("../models/Mutual");
 
 const { auth } = require("../middleware/auth");
 
@@ -55,7 +56,6 @@ router.get("/users", async (req, res) => {
 router.get("/users/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    console.log(user);
     if (user) {
       // console.log("********", user, "*******");
       return res.status(200).json({
@@ -139,33 +139,42 @@ router.post("/login", (req, res) => {
 
 router.post("/useraction/", async (req, res) => {
   let { senderId, recieverId, action } = req.body;
-
-  const useraction = new UserAction({
-    likedBy: senderId,
-    likedFor: recieverId,
-    action: action,
-  });
-
-  if (action == "disliked") {
-    const users = await User.find();
-    let newPriority = users.length;
-    User.findOneAndUpdate(
-      { _id: recieverId },
-      { priority: newPriority },
-      (err, doc) => {
-        if (err) return res.json({ success: false, err });
-      }
-    );
-  }
-
-  useraction.save((err, doc) => {
-    // if (err.code === 11000)
-    //   return res.status(422).json({ success: false, err: "DUPLICATE_ENTRY" });
-    if (err) return res.json({ success: false, err });
-    return res.status(200).json({
-      success: true,
+  try {
+    const useract = await UserAction.find({
+      likedBy: recieverId,
+      likedFor: senderId,
+      action: "liked",
     });
-  });
+    if (useract.length !== 0) {
+      const mutual = new MutualProfiles({
+        user1: senderId,
+        user2: recieverId,
+      });
+      mutual.save();
+    }
+    var useraction = new UserAction({
+      likedBy: senderId,
+      likedFor: recieverId,
+      action: action,
+    });
+    useraction.save();
+    if (action == "disliked") {
+      const users = await User.find();
+      let max = 0;
+      await Promise.all(
+        users.map((user) => {
+          if (user.priority > max) {
+            max = user.priority;
+          }
+        })
+      );
+      let userData = await User.findById(recieverId);
+      userData.updateOne({ _id: recieverId }, { priority: max + 1 }).exec();
+    }
+    res.json({ success: true });
+  } catch (err) {
+    return res.json({ success: false, err });
+  }
 });
 
 //get liked profiles
@@ -178,7 +187,6 @@ router.get("/useraction/", async (req, res) => {
     path: "likedFor",
     select: "-password",
   });
-  console.log(useraction);
   if (!useraction) return res.json({ success: false, err });
   return res.status(200).json(useraction);
 });
@@ -193,6 +201,27 @@ router.delete("/useraction", async (req, res) => {
     likedFor: deletedId,
   });
   return res.status(200);
+});
+
+//get Mutual liked profile
+router.get("/mutualprofile", async (req, res) => {
+  let currentUserId = req.query.userId;
+  var mutual = await MutualProfiles.find({
+    user1: currentUserId,
+  });
+  var mutual2 = await MutualProfiles.find({
+    user2: currentUserId,
+  });
+  if (mutual.length !== 0) {
+    return res.json(mutual);
+  }
+  if (mutual2.length !== 0) {
+    return res.json(mutual2);
+  }
+
+  if (mutual2.length == 0 && mutual.length == 0) {
+    return res.status(404).json({ success: false });
+  }
 });
 
 //Logout

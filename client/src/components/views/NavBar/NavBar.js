@@ -1,12 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import LeftMenu from "./Sections/LeftMenu";
 import RightMenu from "./Sections/RightMenu";
 import { Drawer, Button, Icon } from "antd";
+import { BellFilled } from "@ant-design/icons";
 import "./Sections/Navbar.css";
 import { Link } from "react-router-dom";
+import axios from "axios";
+import { USER_SERVER } from "../../Config";
 
 const NavBar = () => {
   const [visible, setVisible] = useState(false);
+  var i = 0;
+  const [notify, setNotify] = useState(i);
+
+  const getNotification = async () => {
+    await axios
+      .get(`${USER_SERVER}/mutualprofile?userId=${isloggedin}`)
+      .then((res) => {
+        console.log(res.data);
+        setNotify(i + 1);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    getNotification();
+  }, []);
 
   const showDrawer = () => {
     setVisible(true);
@@ -79,10 +100,14 @@ const NavBar = () => {
           <Link to="/home">
             <Button>Home</Button>
           </Link>
-
           <Link to="/myprofile">
             <Button>My Profile</Button>
           </Link>
+          <BellFilled
+            onClick={() => console.log("Clicked")}
+            style={{ cursor: "pointer" }}
+          />
+          <span> {notify} </span>
         </div>
         <div className="menu_rigth">
           <RightMenu mode="horizontal" />
