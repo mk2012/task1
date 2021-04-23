@@ -11,6 +11,7 @@ import ProfilePage from "./views/Profile/ProfilePage";
 import AddBio from "./views/Profile/addBio";
 import Home from "./views/LandingPage/Home";
 import LikedProfiles from "../components/views/Profile/LikedProfiles";
+import Mutual from "../components/views/Profile/Mutual";
 
 //null   Anyone Can go inside
 //true   only logged in user can go inside
@@ -29,6 +30,7 @@ function App() {
           <Route path="/register" component={Auth(RegisterPage, false)} />
           <Route path="/myprofile/bio" component={Auth(AddBio, false)} />
           <Route path="/myprofile" component={Auth(ProfilePage, false)} />
+          <Route path="/mutualprofile" component={Auth(Mutual, false)} />
           <Route path="/home" component={Auth(Home, false)} />
           <Route path="/" component={Auth(LandingPage, false)} />
         </Switch>

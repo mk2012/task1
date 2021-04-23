@@ -47,7 +47,7 @@ const Home = () => {
 
   return (
     <div>
-      <div style={{ textAlign: "center", marginTop: "10px" }}>
+      <div style={{ textAlign: "center", marginTop: "30px" }}>
         <h1> Welcome {name} </h1>
       </div>
       <div className="home-container">

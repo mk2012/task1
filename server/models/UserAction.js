@@ -16,5 +16,5 @@ const UserActionSchema = mongoose.Schema({
 });
 
 UserActionSchema.index({ likedBy: 1, likedFor: 1 }, { unique: true });
-const UserAction = mongoose.model("userAction", UserActionSchema);
+const UserAction = mongoose.model("UserAction", UserActionSchema);
 module.exports = { UserAction };

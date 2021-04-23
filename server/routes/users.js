@@ -208,9 +208,15 @@ router.get("/mutualprofile", async (req, res) => {
   let currentUserId = req.query.userId;
   var mutual = await MutualProfiles.find({
     user1: currentUserId,
+  }).populate({
+    path: "user2",
+    select: "-password",
   });
   var mutual2 = await MutualProfiles.find({
     user2: currentUserId,
+  }).populate({
+    path: "user1",
+    select: "-password",
   });
   if (mutual.length !== 0) {
     return res.json(mutual);

@@ -8,7 +8,7 @@ const MutualSchema = mongoose.Schema({
   },
   user2: {
     type: Schema.Types.ObjectId,
-    ref: "UserAction",
+    ref: "User",
   },
 });
 
