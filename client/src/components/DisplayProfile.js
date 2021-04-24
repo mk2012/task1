@@ -2,10 +2,10 @@ import * as React from "react";
 import { USER_SERVER } from "./Config";
 import axios from "axios";
 import { Avatar, Button, message } from "antd";
-import { UserOutlined, LikeOutlined, DislikeOutlined } from "@ant-design/icons";
+import { UserOutlined } from "@ant-design/icons";
 
 const id = localStorage.getItem("userId");
-const DisplayProfile = ({ user, sendId, likedProfile }) => {
+const DisplayProfile = ({ user, sendId, likedProfile, mutualLiked }) => {
   const removeProfile = async (user) => {
     await axios
       .delete(`${USER_SERVER}/useraction?userId=${id}&deletedId=${user?._id}`)
@@ -60,6 +60,11 @@ const DisplayProfile = ({ user, sendId, likedProfile }) => {
             Remove
           </Button>
         )}
+        {mutualLiked ? (
+          <Button style={{ backgroundColor: "#FE0267", color: "white" }}>
+            Message
+          </Button>
+        ) : null}
       </div>
     </div>
   );

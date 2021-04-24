@@ -107,6 +107,7 @@ router.get("/myprofile/:id", async (req, res) => {
     description: user.description,
     success: true,
     token: user.token,
+    image: user.image,
   });
 });
 
@@ -229,6 +230,8 @@ router.get("/mutualprofile", async (req, res) => {
     return res.status(404).json({ success: false });
   }
 });
+
+// image upload
 
 //Logout
 router.get("/logout", auth, (req, res) => {

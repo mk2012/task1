@@ -45,6 +45,7 @@ function AddBio() {
         <h1> Add Bio </h1>
         <label>Name</label>
         <Input onChange={(e) => setName(e.target.value)} />
+
         <TextArea
           style={{ width: "30%", marginTop: "20px", marginRight: "30px" }}
           rows={4}

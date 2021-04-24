@@ -32,7 +32,11 @@ function App() {
           <Route path="/myprofile" component={Auth(ProfilePage, false)} />
           <Route path="/mutualprofile" component={Auth(Mutual, false)} />
           <Route path="/home" component={Auth(Home, false)} />
-          <Route path="/" component={Auth(LandingPage, false)} />
+          {!isloggedin ? (
+            <Route path="/" component={Auth(LandingPage, false)} />
+          ) : (
+            <Route path="/" component={Auth(Home, false)} />
+          )}
         </Switch>
       </div>
       <Footer />

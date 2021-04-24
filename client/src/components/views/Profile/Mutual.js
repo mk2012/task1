@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { USER_SERVER } from "../../../components/Config";
 import DisplayProfile from "../../DisplayProfile";
+import { Button } from "antd";
 
 const Mutual = () => {
   const [mutualProfiles, setMutualProfiles] = useState([]);
@@ -52,7 +53,8 @@ const Mutual = () => {
               <DisplayProfile
                 key={mutual._id}
                 user={user}
-                likedprofile={true}
+                likedProfile={true}
+                mutualLiked={true}
               />
             );
           })
