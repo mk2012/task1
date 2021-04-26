@@ -52,38 +52,20 @@ const ProfilePage = (props) => {
       });
   };
 
-  // var props = {
-  //   name: "file",
-  //   action: `http://localhost:5001/user-profile?userId=${id}`,
-  //   headers: {
-  //     key: "image",
-  //   },
-
-  //   onChange(info) {
-  //     if (info.file.status !== "uploading") {
-  //       console.log(info.file, info.fileList);
-  //     }
-  //     if (info.file.status === "done") {
-  //       message.success(`${info.file.name} file uploaded successfully`);
-  //     } else if (info.file.status === "error") {
-  //       message.error(`${info.file.name} file upload failed.`);
-  //     }
-  //   },
+  // const sendImage = async (file) => {
+  //   var bodyFormData = new FormData();
+  //   bodyFormData.append("image", file);
+  //   await axios
+  //     .post(`http://localhost:5001/user-profile?userId=${id}`, bodyFormData, {
+  //       headers: { "Content-Type": "multipart/form-data" },
+  //     })
+  //     .then((res) => {
+  //       console.log(res.data);
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
   // };
-  const sendImage = async (file) => {
-    var bodyFormData = new FormData();
-    bodyFormData.append("image", file);
-    await axios
-      .post(`http://localhost:5001/user-profile?userId=${id}`, bodyFormData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
-      .then((res) => {
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
 
   const uploadImage = (options) => {
     const { onSuccess, onError, file, onProgress } = options;
@@ -105,7 +87,7 @@ const ProfilePage = (props) => {
       })
       .catch((err) => {
         const error = new Error("Some error");
-        onError({ event: error });
+        onError({ event: "error" });
       });
   };
   return (
@@ -121,10 +103,6 @@ const ProfilePage = (props) => {
                 {<UploadOutlined />} {<CameraOutlined />}
               </Button>
             </Upload>
-            {/* <div>
-              <input type="file" name="file" />
-              <input type="submit" onClick={() => sendImage()} />
-            </div> */}
             <Link to="/myprofile/bio">
               <Button style={{ marginTop: "10px", marginLeft: "10px" }}>
                 {<EditOutlined />} Bio

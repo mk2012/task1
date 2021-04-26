@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 const MutualSchema = mongoose.Schema({
   user1: {
     type: Schema.Types.ObjectId,
-    ref: "UserAction",
+    ref: "User",
   },
   user2: {
     type: Schema.Types.ObjectId,

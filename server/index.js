@@ -8,7 +8,7 @@ const { User } = require("./models/User");
 const { v4: uuidv4 } = require("uuid");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
-
+var multiparty = require("multiparty");
 const config = require("./config/key");
 const mongoURI = require("./config/dev");
 
@@ -42,12 +42,15 @@ var upload = multer({
 
 app.post("/user-profile", upload.single("image"), async (req, res, next) => {
   const id = req.query.userId;
+  var form = new multiparty.Form();
   const url = req.protocol + "://" + req.get("host");
   const user = await User.findById(id);
-  user.updateOne({ image: url + "/uploads/" + req.file.filename }).exec();
-  if (!user) return res.json({ success: false });
-  return res.status(200).json({
-    success: true,
+  form.parse(req, function (err, fields, file) {
+    user.updateOne({ image: url + "/uploads/" + req.file.filename }).exec();
+    if (!user) return res.json({ success: false });
+    return res.status(200).json({
+      success: true,
+    });
   });
 });
 
@@ -68,7 +71,6 @@ app.get("/user-profile", async (req, res, next) => {
 //   .catch(err => console.error(err));
 
 const mongoose = require("mongoose");
-const { UserAction } = require("./models/UserAction");
 mongoose.connect("mongodb://localhost/wb", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
