@@ -19,6 +19,7 @@
     "redux": "^4.0.0",
     "redux-promise": "^0.6.0",
     "redux-thunk": "^2.3.0",
+    "socket.io-client": "^4.0.1",
     "yup": "^0.27.0"
   },
   "scripts": {
@@ -43,6 +44,7 @@
     ]
   },
   "devDependencies": {
-    "http-proxy-middleware": "^1.0.3"
+    "http-proxy-middleware": "^1.0.3",
+    "remote-redux-devtools": "^0.5.16"
   }
 }

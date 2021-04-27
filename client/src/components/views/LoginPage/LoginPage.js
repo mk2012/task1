@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { withRouter, Router, useHistory } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { withRouter, Router, useHistory, Redirect } from "react-router-dom";
 import { loginUser } from "../../../_actions/user_actions";
 import { Formik } from "formik";
 import * as Yup from "yup";
@@ -10,7 +10,17 @@ const { Title } = Typography;
 
 function LoginPage(props) {
   const history = useHistory();
-  const [token, setToken] = useState("");
+
+  useEffect(() => {
+    checkLogin();
+  }, []);
+
+  const checkLogin = () => {
+    const id = localStorage.getItem("userId");
+    if (id !== undefined) {
+      return <Redirect to="/myprofile" />;
+    }
+  };
   const dispatch = useDispatch();
   const rememberMeChecked = localStorage.getItem("rememberMe") ? true : false;
 
@@ -24,17 +34,6 @@ function LoginPage(props) {
   const initialEmail = localStorage.getItem("rememberMe")
     ? localStorage.getItem("rememberMe")
     : "";
-
-  // const getToken = ()=>{
-  // useEffect(()=>{
-  //   axios.get(`${USER_SERVER}/myprofile/${id}`)
-  //     .then(res=>{
-  //        setToken(res.data.token);
-  //       console.log(token);
-  //     }
-
-  // },[])
-  // }
 
   return (
     <Formik

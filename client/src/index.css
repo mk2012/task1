@@ -113,3 +113,20 @@ input.error {
   justify-content: center;
   margin-top: 15px;
 }
+
+.chat-container {
+  width: 30%;
+  height: 60vh;
+  overflow: scroll;
+  overflow-x: hidden;
+  background-color: #efefef;
+  padding: 10px;
+}
+
+.chatpage-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+}

@@ -42,7 +42,6 @@ const ProfilePage = (props) => {
       .then((res) => {
         if (res.data) {
           setImage(res.data.image);
-          console.log(res.data.image);
         } else {
           setImage("");
         }
@@ -52,29 +51,16 @@ const ProfilePage = (props) => {
       });
   };
 
-  // const sendImage = async (file) => {
-  //   var bodyFormData = new FormData();
-  //   bodyFormData.append("image", file);
-  //   await axios
-  //     .post(`http://localhost:5001/user-profile?userId=${id}`, bodyFormData, {
-  //       headers: { "Content-Type": "multipart/form-data" },
-  //     })
-  //     .then((res) => {
-  //       console.log(res.data);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // };
-
   const uploadImage = (options) => {
     const { onSuccess, onError, file, onProgress } = options;
 
     const fmData = new FormData();
     const config = {
-      headers: { "content-type": "multipart/form-data" },
+      headers: {
+        "content-type": "multipart/form-data",
+      },
       onUploadProgress: (event) => {
-        console.log((event.loaded / event.total) * 100);
+        // console.log((event.loaded / event.total) * 100);
         onProgress({ percent: (event.loaded / event.total) * 100 }, file);
       },
     };

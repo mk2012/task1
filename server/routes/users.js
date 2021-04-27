@@ -64,6 +64,7 @@ router.get("/users/:id", async (req, res) => {
         description: user.description,
         success: true,
         token: user.token,
+        image: user.image,
       });
     } else {
       res.status(404);

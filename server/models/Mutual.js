@@ -10,6 +10,10 @@ const MutualSchema = mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
+  roomId: {
+    type: Schema.Types.ObjectId,
+    ref: "ChatRoom",
+  },
 });
 
 MutualSchema.index({ user1: 1, user2: 1 }, { unique: true });

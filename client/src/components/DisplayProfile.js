@@ -5,7 +5,13 @@ import { Avatar, Button, message } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 
 const id = localStorage.getItem("userId");
-const DisplayProfile = ({ user, sendId, likedProfile, mutualLiked }) => {
+const DisplayProfile = ({
+  user,
+  sendId,
+  likedProfile,
+  mutualLiked,
+  onClickMessage,
+}) => {
   const removeProfile = async (user) => {
     await axios
       .delete(`${USER_SERVER}/useraction?userId=${id}&deletedId=${user?._id}`)
@@ -61,7 +67,10 @@ const DisplayProfile = ({ user, sendId, likedProfile, mutualLiked }) => {
           </Button>
         )}
         {mutualLiked ? (
-          <Button style={{ backgroundColor: "#FE0267", color: "white" }}>
+          <Button
+            style={{ backgroundColor: "#FE0267", color: "white" }}
+            onClick={() => onClickMessage(user._id)}
+          >
             Message
           </Button>
         ) : null}
