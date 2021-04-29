@@ -39,11 +39,7 @@ const DisplayProfile = ({
 
   return (
     <div className="home-profile-container" key={user?._id}>
-      <Avatar
-        size={64}
-        icon={<UserOutlined />}
-        src={user.image ? user.image : ""}
-      />
+      <Avatar size={64} icon={<UserOutlined />} src={user?.image} />
       <h1>{user?.name} </h1> <h4> {user?.description}</h4>
       <div className="icon-container">
         {!likedProfile ? (
