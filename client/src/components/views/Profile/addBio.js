@@ -36,7 +36,7 @@ function AddBio() {
         console.log(err);
       });
     message.info("Successfully Updated");
-    history.push({ pathname: "/myprofile" });
+    history.push({ pathname: "/myprofile", state: "added" });
   };
 
   return (

@@ -58,6 +58,7 @@ io.on("connection", (socket) => {
     await message.save();
     let messages = await Message.find({ roomId: roomId }).populate("userId");
     io.emit("messageSent", messages);
+    io.emit("notification", message);
   });
 });
 

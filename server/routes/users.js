@@ -5,6 +5,8 @@ const { UserAction } = require("../models/UserAction");
 const { MutualProfiles } = require("../models/Mutual");
 
 const { auth } = require("../middleware/auth");
+const socketServer = require("http").createServer(router);
+const io = require("socket.io")(socketServer);
 
 //=================================
 //             User
@@ -28,24 +30,30 @@ router.get("/auth", auth, (req, res) => {
 router.get("/users", async (req, res) => {
   let currentUserId = req.query.userId;
   try {
-    const users = await User.find().sort({ priority: 1 }).exec();
-    let notLikedUsers = [];
-    await Promise.all(
-      users.map(async (user) => {
-        const alreadyLiked = await UserAction.find({
-          likedBy: currentUserId,
-          likedFor: user._id,
-          action: "liked",
-        });
-        if (alreadyLiked.length === 0 && user._id != currentUserId) {
-          notLikedUsers.push(user);
-        }
-      })
-    );
-    if (notLikedUsers) {
-      return res.status(200).json(notLikedUsers);
+    if (currentUserId) {
+      const users = await User.find().sort({ priority: 1 }).exec();
+      let notLikedUsers = [];
+      await Promise.all(
+        users.map(async (user) => {
+          const alreadyLiked = await UserAction.find({
+            likedBy: currentUserId,
+            likedFor: user._id,
+            action: "liked",
+          });
+          if (alreadyLiked.length === 0 && user._id != currentUserId) {
+            notLikedUsers.push(user);
+          }
+        })
+      );
+      if (notLikedUsers) {
+        return res.status(200).json(notLikedUsers);
+      } else {
+        res.status(404);
+      }
     } else {
-      res.status(404);
+      const users = await User.find();
+      if (!users) return res.status(404).json({ success: false });
+      return res.status(200).json(users);
     }
   } catch (err) {
     console.log(err);
@@ -148,11 +156,28 @@ router.post("/useraction/", async (req, res) => {
       action: "liked",
     });
     if (useract.length !== 0) {
-      const mutual = new MutualProfiles({
+      const existMutual = await MutualProfiles.find({
         user1: senderId,
         user2: recieverId,
       });
-      mutual.save();
+      const existMutual2 = await MutualProfiles.find({
+        user1: recieverId,
+        user2: senderId,
+      });
+      if (existMutual.length == 0 && existMutual2.length == 0) {
+        let mutual = new MutualProfiles({
+          user1: senderId,
+          user2: recieverId,
+        });
+
+        mutual.save();
+
+        io.on("connection", (socket) => {
+          socket.on("Notify", (user) => {
+            io.emit("MutualNotify", mutual);
+          });
+        });
+      }
     }
     var useraction = new UserAction({
       likedBy: senderId,
@@ -202,34 +227,41 @@ router.delete("/useraction", async (req, res) => {
     likedBy: currentUserId,
     likedFor: deletedId,
   });
-  return res.status(200);
+  return res.status(200).json({ success: true });
 });
 
 //get Mutual liked profile
 router.get("/mutualprofile", async (req, res) => {
   let currentUserId = req.query.userId;
   var mutual = await MutualProfiles.find({
-    user1: currentUserId,
-  }).populate({
-    path: "user2",
-    select: "-password",
-  });
-  var mutual2 = await MutualProfiles.find({
-    user2: currentUserId,
-  }).populate({
-    path: "user1",
-    select: "-password",
-  });
+    $or: [{ user1: currentUserId }, { user2: currentUserId }],
+  }).populate("user1 user2");
+  // var mutual2 = await MutualProfiles.find({
+  //   user2: currentUserId,
+  // }).populate({
+  //   path: "user1",
+  //   select: "-password",
+  // });
   if (mutual.length !== 0) {
     return res.json(mutual);
   }
-  if (mutual2.length !== 0) {
-    return res.json(mutual2);
-  }
+  // if (mutual2.length !== 0) {
+  //   return res.json(mutual2);
+  // }
 
-  if (mutual2.length == 0 && mutual.length == 0) {
+  if (mutual.length == 0) {
     return res.status(404).json({ success: false });
   }
+});
+
+//delete Mutual liked profile
+
+router.delete("/mutualprofile", async (req, res) => {
+  let mutualId = req.query.mutualProfileId;
+
+  const mutualLikedUser = await MutualProfiles.findByIdAndDelete(mutualId);
+  if (!mutualLikedUser) return res.status(404).json({ success: false });
+  return res.status(200).json({ success: true });
 });
 
 // image upload
@@ -246,6 +278,10 @@ router.get("/logout", auth, (req, res) => {
       });
     }
   );
+});
+
+socketServer.listen(8003, () => {
+  console.log("8003 connected");
 });
 
 module.exports = router;

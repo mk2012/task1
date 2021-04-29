@@ -9,7 +9,8 @@ import { useHistory } from "react-router";
 const Mutual = () => {
   const history = useHistory();
   const [mutualProfiles, setMutualProfiles] = useState([]);
-  const [user, setUser] = useState([]);
+
+  var id = localStorage.getItem("userId");
 
   useEffect(() => {
     getMutualProfiles();
@@ -50,27 +51,13 @@ const Mutual = () => {
       .get(`${USER_SERVER}/mutualprofile?userId=${id}`)
       .then((res) => {
         setMutualProfiles(res.data);
+        console.log(res.data);
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  useEffect(() => {
-    getUser();
-  }, [getMutualProfiles]);
-
-  const getUser = () => {
-    const id = localStorage.getItem("userId");
-
-    mutualProfiles.map((mutual) => {
-      if (id == mutual.user1) {
-        setUser(mutual.user2);
-      } else {
-        setUser(mutual.user1);
-      }
-    });
-  };
   return (
     <div>
       <div style={{ textAlign: "center", marginTop: "30px" }}>
@@ -82,7 +69,14 @@ const Mutual = () => {
             return (
               <DisplayProfile
                 key={mutual._id}
-                user={user}
+                user={
+                  id === mutual.user1?._id
+                    ? mutual.user2
+                    : id === mutual.user2?._id
+                    ? mutual.user1
+                    : null
+                }
+                mutual={mutual}
                 likedProfile={true}
                 mutualLiked={true}
                 onClickMessage={(userId) =>

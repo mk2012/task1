@@ -1,6 +1,9 @@
 import React, { Suspense, useEffect } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
+import { message, notification } from "antd";
+
 import Auth from "../hoc/auth";
+import io from "socket.io-client";
 // pages for this product
 import LandingPage from "./views/LandingPage/LandingPage.js";
 import LoginPage from "./views/LoginPage/LoginPage.js";
@@ -17,10 +20,40 @@ import ChatPage from "../components/views/Message/ChatPage";
 //null   Anyone Can go inside
 //true   only logged in user can go inside
 //false  logged in user can't go inside
-
+const Context = React.createContext({ name: "Default" });
 function App() {
   const isloggedin = localStorage.getItem("userId");
+
   useEffect(() => {}, []);
+  useEffect(() => {
+    var socket = io("http://localhost:8002", {
+      transports: ["websocket", "polling", "flashsocket"],
+    });
+
+    socket.on("notification", (msg) => {
+      message.success("New message", msg.message);
+    });
+
+    var socket2 = io("http://localhost:8003", {
+      transports: ["websocket", "polling", "flashsocket"],
+    });
+    socket2.on("MutualNotify", (mutual) => {
+      console.log("2");
+      openNotification();
+    });
+  }, []);
+
+  const openNotification = () => {
+    notification.open({
+      message: "New Mutual Liked Profile",
+      description:
+        "You have new Mutually Liked Profile.See who it is! Start Chatting...",
+      className: "custom-class",
+      style: {
+        width: 600,
+      },
+    });
+  };
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <NavBar />

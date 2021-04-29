@@ -3,6 +3,7 @@ import { USER_SERVER } from "./Config";
 import axios from "axios";
 import { Avatar, Button, message } from "antd";
 import { UserOutlined } from "@ant-design/icons";
+import { useHistory } from "react-router-dom";
 
 const id = localStorage.getItem("userId");
 const DisplayProfile = ({
@@ -11,22 +12,38 @@ const DisplayProfile = ({
   likedProfile,
   mutualLiked,
   onClickMessage,
+  mutual,
 }) => {
-  const removeProfile = async (user) => {
+  const history = useHistory();
+  const removeProfile = async (user, mutual) => {
     await axios
       .delete(`${USER_SERVER}/useraction?userId=${id}&deletedId=${user?._id}`)
       .then((res) => {
         console.log(res.data);
-        message.info("Profile removed");
+        message.success("Profile removed");
+        history.push("/myprofile");
       })
       .catch((err) => {
         console.log(err);
       });
+    if (mutual !== undefined)
+      await axios
+        .delete(`${USER_SERVER}/mutualprofile?mutualProfileId=${mutual._id}`)
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
   };
 
   return (
     <div className="home-profile-container" key={user?._id}>
-      <Avatar size={64} icon={<UserOutlined />} />
+      <Avatar
+        size={64}
+        icon={<UserOutlined />}
+        src={user.image ? user.image : ""}
+      />
       <h1>{user?.name} </h1> <h4> {user?.description}</h4>
       <div className="icon-container">
         {!likedProfile ? (
@@ -59,7 +76,7 @@ const DisplayProfile = ({
         ) : (
           <Button
             onClick={() => {
-              removeProfile(user);
+              removeProfile(user, mutual);
             }}
             style={{ backgroundColor: "#191970", color: "white" }}
           >

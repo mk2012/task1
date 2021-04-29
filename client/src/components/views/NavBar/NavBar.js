@@ -4,6 +4,7 @@ import RightMenu from "./Sections/RightMenu";
 import { Drawer, Button, Icon } from "antd";
 import "./Sections/Navbar.css";
 import { Link } from "react-router-dom";
+import { Menu } from "antd";
 
 const NavBar = () => {
   const [visible, setVisible] = useState(false);
@@ -15,6 +16,7 @@ const NavBar = () => {
   const onClose = () => {
     setVisible(false);
   };
+  const MenuItemGroup = Menu.ItemGroup;
 
   const isloggedin = localStorage.getItem("userId");
 
@@ -62,30 +64,32 @@ const NavBar = () => {
         <a href="/">Logo</a>
       </div>
       <div className="menu__container">
-        {/* <div className="menu_left">
+        <div className="menu_left">
           <LeftMenu mode="horizontal" />
-        </div> */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            height: "70px",
-            paddingLeft: "40px",
-            width: "500px",
-            justifyContent: "space-evenly",
-          }}
-          className="menu_left"
+        </div>
+        {/* <div
+        // style={{
+        //   display: "flex",
+        //   alignItems: "center",
+        //   height: "70px",
+        //   paddingLeft: "40px",
+        //   width: "500px",
+        //   justifyContent: "space-evenly",
+        // }}
+        // className="menu_left"
         >
           <Link to="/home">
             <Button>Home</Button>
           </Link>
-          <Link to="/myprofile">
-            <Button>My Profile</Button>
-          </Link>
-          <Link to="/mutualprofile">
-            <Button>Matched Profiles</Button>
-          </Link>
-        </div>
+          <Menu>
+            <Menu.Item key="mail">
+              <a href="/myprofile">My Profile</a>
+            </Menu.Item>
+            <Menu.Item key="mail">
+              <a href="/mutualprofile">Matched Profiles</a>
+            </Menu.Item>
+          </Menu>
+        </div> */}
         <div className="menu_rigth">
           <RightMenu mode="horizontal" />
         </div>

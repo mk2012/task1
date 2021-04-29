@@ -3,12 +3,15 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { USER_SERVER } from "../../../components/Config";
 import DisplayProfile from "../../DisplayProfile";
+import io from "socket.io-client";
 
 let act = "";
 
 const Home = () => {
   const [name, setName] = useState("");
   const [userData, setUserData] = useState([]);
+
+  useEffect(() => {});
 
   const getUsers = async () => {
     const id = localStorage.getItem("userId");
@@ -29,10 +32,18 @@ const Home = () => {
     getName();
   }, []);
 
+  // Store like/dislike
   const sendId = async (user, act) => {
     const senderId = localStorage.getItem("userId");
     var recieverId = user._id;
     var data = { recieverId, senderId, action: act };
+    var socket = io("http://localhost:8003", {
+      transports: ["websocket", "polling", "flashsocket"],
+    });
+    socket.emit("Notify", (user) => {
+      // For Msg Notification
+      console.log(user);
+    });
     await axios
       .post(`${USER_SERVER}/useraction/`, data)
       .then((res) => {
@@ -48,12 +59,12 @@ const Home = () => {
   return (
     <div>
       <div style={{ textAlign: "center", marginTop: "30px" }}>
-        <h1> Welcome {name} </h1>
+        <h1 style={{ letterSpacing: "4px", color: "#4682B4" }}>
+          Welcome {name}
+        </h1>
+        <h2>Suggested Profiles : </h2>
       </div>
       <div className="home-container">
-        {/* {userData.map((user) => {
-          if (name !== user.name)
-            return ( */}
         {userData.length !== 0 ? (
           <DisplayProfile
             user={userData[0]}
@@ -62,8 +73,6 @@ const Home = () => {
         ) : (
           <div>No Users Found</div>
         )}
-        {/* );
-        })} */}
       </div>
     </div>
   );

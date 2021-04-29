@@ -16,6 +16,6 @@ const MutualSchema = mongoose.Schema({
   },
 });
 
-MutualSchema.index({ user1: 1, user2: 1 }, { unique: true });
+MutualSchema.index({ user1: 1, user2: 1, roomId: 1 }, { unique: true });
 const MutualProfiles = mongoose.model("mutual", MutualSchema);
 module.exports = { MutualProfiles };

@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import io from "socket.io-client";
-import { Button, Input } from "antd";
+import { Button, Input, message } from "antd";
 import axios from "axios";
 import { USER_SERVER } from "../../Config";
-import moment from "moment";
 import { CHAT_SERVER } from "../../Config";
 import { connect } from "react-redux";
 import { useLocation } from "react-router";
@@ -14,30 +13,19 @@ const ChatPage = () => {
   const location = useLocation();
   const [roomId, setRoomId] = useState();
   const [messages, setMessages] = useState([]);
+  // const [api, contextHolder] = notification.useNotification();
+  // const openNotification = (message) => {
+  //   api.info({
+  //     message: `New Message`,
+  //     description: message,
+  //     placement: "topRight",
+  //   });
+  // };
   // const [chats, setChats] = useState([]);
   useEffect(() => {
     getCurrentUserInfo();
   }, []);
   const id = localStorage.getItem("userId");
-  // const getChats = async () => {
-  //   const id = localStorage.getItem("userId");
-  //   const request = await axios
-  //     .get(`${CHAT_SERVER}/getchat?userId=${id}`)
-  //     .then((res) => {
-  //       setChats(res.data);
-  //     });
-  // };
-
-  // useEffect(() => {
-  //   const id = localStorage.getItem("userId");
-  //   var socket = io("http://localhost:8002", {
-  //     transports: ["websocket", "polling", "flashsocket"],
-  //   });
-  //   socket.emit("join", {senderId : id})
-  //   socket.on("Output chat message", (message) => {
-  //     console.log(message);
-  //   });
-  // }, []);
 
   useEffect(() => {
     var socket = io("http://localhost:8002", {
@@ -77,25 +65,7 @@ const ChatPage = () => {
       transports: ["websocket", "polling", "flashsocket"],
     });
     socket.emit("message", { userId: id, message: chat, roomId: roomId });
-    // let server =
-    //   ("http://localhost:8002",
-    //   { transport: ["websocket", "polling", "flashsocket"] });
-    // var socket = io("http://localhost:8002", {
-    //   transports: ["websocket", "polling", "flashsocket"],
-    // });
-    // let nowTime = moment();
-    // let type = "text";
-    // socket.emit("Input chat message", {
-    //   headers: {
-    //     "Access-Control-Allow-Origin": "http://localhost:8002",
-    //   },
-    //   name,
-    //   image,
-    //   type,
-    //   nowTime,
-    //   chat,
-    //   id,
-    // });
+
     setChat("");
   };
 
@@ -165,6 +135,7 @@ const ChatPage = () => {
             </div>
           );
         })}
+        :
       </div>
       <Input
         style={{ width: "30%", marginTop: 10 }}
