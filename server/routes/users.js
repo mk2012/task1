@@ -31,7 +31,7 @@ router.get("/users", async (req, res) => {
   let currentUserId = req.query.userId;
   try {
     if (currentUserId) {
-      const users = await User.find().sort({ priority: 1 }).exec();
+      const users = await User.find();
       let notLikedUsers = [];
       await Promise.all(
         users.map(async (user) => {
@@ -40,7 +40,17 @@ router.get("/users", async (req, res) => {
             likedFor: user._id,
             action: "liked",
           });
-          if (alreadyLiked.length === 0 && user._id != currentUserId) {
+          const disliked = await UserAction.find({
+            likedBy: currentUserId,
+            likedFor: user._id,
+            action: "disliked",
+          });
+
+          if (
+            alreadyLiked.length === 0 &&
+            user._id != currentUserId &&
+            disliked.length == 0
+          ) {
             notLikedUsers.push(user);
           }
         })
@@ -184,18 +194,32 @@ router.post("/useraction/", async (req, res) => {
       likedFor: recieverId,
       action: "disliked",
     });
+    var alreadyLiked = await UserAction.findOne({
+      likedBy: senderId,
+      likedFor: recieverId,
+      action: "liked",
+    });
+    if (alreadyLiked) {
+      return res.status(304).json({ success: false });
+    }
     if (alreadydisliked) {
-      var dislikedToLiked = alreadydisliked
-        .updateOne({ action: "liked" })
-        .exec();
+      if (action == "liked") {
+        var dislikedToLiked = alreadydisliked
+          .updateOne({ action: "liked", updatedAt: Date.now() })
+          .exec();
+      } else if (action == "disliked") {
+        var dislikedTodisLiked = alreadydisliked
+          .updateOne({ action: "disliked", updatedAt: Date.now() })
+          .exec();
+      }
     } else {
       var useraction = new UserAction({
         likedBy: senderId,
         likedFor: recieverId,
         action: action,
+        updatedAt: Date.now(),
       });
       useraction.save();
-      console.log("saved");
     }
     res.json({ success: true });
   } catch (err) {
@@ -215,6 +239,33 @@ router.get("/useraction/", async (req, res) => {
   });
   if (!useraction) return res.json({ success: false, err });
   return res.status(200).json(useraction);
+});
+
+//get disliked profile
+
+router.get("/dislikedprofile/", async (req, res) => {
+  let currentUserId = req.query.userId;
+  try {
+    const dislikedprofiles = await UserAction.find({
+      likedBy: currentUserId,
+      action: "disliked",
+    })
+      .populate({
+        path: "likedFor",
+        select: "-password",
+      })
+      .sort({ updatedAt: 1 });
+
+    const profiles = [];
+    dislikedprofiles.map((profile) => {
+      profiles.push(profile.likedFor);
+    });
+    // console.log(profiles);
+    if (!dislikedprofiles) return res.status(404).json({ success: false, err });
+    return res.status(200).json(profiles);
+  } catch (err) {
+    return res.json({ success: false, err });
+  }
 });
 
 //delete liked profile

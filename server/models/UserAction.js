@@ -13,6 +13,9 @@ const UserActionSchema = mongoose.Schema({
   action: {
     type: String,
   },
+  updatedAt: {
+    type: Date,
+  },
 });
 
 UserActionSchema.index({ likedBy: 1, likedFor: 1 }, { unique: true });

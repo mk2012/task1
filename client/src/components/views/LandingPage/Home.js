@@ -10,13 +10,13 @@ let act = "";
 const Home = () => {
   const [name, setName] = useState("");
   const [userData, setUserData] = useState([]);
-
-  useEffect(() => {});
+  const [dislikeduserData, setDisLikedUserData] = useState([]);
 
   const getUsers = async () => {
     const id = localStorage.getItem("userId");
     await axios.get(`${USER_SERVER}/users?userId=${id}`).then((res) => {
       setUserData(res.data);
+      getDislikedUsers();
     });
   };
 
@@ -27,9 +27,24 @@ const Home = () => {
     setName(response);
   };
 
+  const getDislikedUsers = async () => {
+    const id = localStorage.getItem("userId");
+    await axios
+      .get(`${USER_SERVER}/dislikedprofile?userId=${id}`)
+      .then((res) => {
+        if (res.data?.length !== 0) {
+          setDisLikedUserData(res.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   useEffect(() => {
     getUsers();
     getName();
+    // getDislikedUsers();
   }, []);
 
   // Store like/dislike
@@ -37,18 +52,21 @@ const Home = () => {
     const senderId = localStorage.getItem("userId");
     var recieverId = user._id;
     var data = { recieverId, senderId, action: act };
-    var socket = io("http://localhost:8003", {
-      transports: ["websocket", "polling", "flashsocket"],
-    });
-    socket.emit("Notify", (user) => {
-      // For Msg Notification
-      console.log(user);
-    });
+    if (act == "liked") {
+      var socket = io("http://localhost:8003", {
+        transports: ["websocket", "polling", "flashsocket"],
+      });
+      socket.emit("Notify", (user) => {
+        // For Msg Notification
+        console.log(user);
+      });
+    }
     await axios
       .post(`${USER_SERVER}/useraction/`, data)
       .then((res) => {
         console.log(res.data);
         getUsers();
+        // getDislikedUsers();
       })
       .catch((err) => {
         console.log(err);
@@ -56,6 +74,9 @@ const Home = () => {
       });
   };
 
+  useEffect(() => {
+    console.log(userData);
+  }, [userData]);
   return (
     <div>
       <div style={{ textAlign: "center", marginTop: "30px" }}>
@@ -65,13 +86,28 @@ const Home = () => {
         <h2>Suggested Profiles : </h2>
       </div>
       <div className="home-container">
-        {userData.length !== 0 ? (
+        {userData.length !== 0 || dislikeduserData.length !== 0 ? (
           <DisplayProfile
-            user={userData[0]}
+            user={
+              userData.length !== 0
+                ? userData[0]
+                : dislikeduserData.length !== 0
+                ? dislikeduserData[0]
+                : {}
+            }
             sendId={(user, action) => sendId(user, action)}
           />
         ) : (
+          // <div className="home-container">
+          //   {dislikeduserData.length !== 0 ? (
+          //     <DisplayProfile
+          //       user={dislikeduserData[0]}
+          //       sendId={(user, action) => sendId(user, action)}
+          //     />
+          //   ) : (
           <div>No Users Found</div>
+          //   )}
+          // </div>
         )}
       </div>
     </div>

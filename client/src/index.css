@@ -130,3 +130,7 @@ input.error {
   width: 100%;
   overflow: hidden;
 }
+
+.disliked-profile-container {
+  background-color: green;
+}
