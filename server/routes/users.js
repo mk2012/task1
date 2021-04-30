@@ -179,24 +179,23 @@ router.post("/useraction/", async (req, res) => {
         });
       }
     }
-    var useraction = new UserAction({
+    var alreadydisliked = await UserAction.findOne({
       likedBy: senderId,
       likedFor: recieverId,
-      action: action,
+      action: "disliked",
     });
-    useraction.save();
-    if (action == "disliked") {
-      const users = await User.find();
-      let max = 0;
-      await Promise.all(
-        users.map((user) => {
-          if (user.priority > max) {
-            max = user.priority;
-          }
-        })
-      );
-      let userData = await User.findById(recieverId);
-      userData.updateOne({ _id: recieverId }, { priority: max + 1 }).exec();
+    if (alreadydisliked) {
+      var dislikedToLiked = alreadydisliked
+        .updateOne({ action: "liked" })
+        .exec();
+    } else {
+      var useraction = new UserAction({
+        likedBy: senderId,
+        likedFor: recieverId,
+        action: action,
+      });
+      useraction.save();
+      console.log("saved");
     }
     res.json({ success: true });
   } catch (err) {
