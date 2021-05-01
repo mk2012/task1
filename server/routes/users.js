@@ -181,12 +181,13 @@ router.post("/useraction/", async (req, res) => {
         });
 
         mutual.save();
-
-        io.on("connection", (socket) => {
-          socket.on("Notify", (user) => {
-            io.emit("MutualNotify", mutual);
+        if (mutual) {
+          io.on("connection", (socket) => {
+            socket.on("Notify", (user) => {
+              io.emit("MutualNotify", mutual);
+            });
           });
-        });
+        }
       }
     }
     var alreadydisliked = await UserAction.findOne({

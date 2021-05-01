@@ -53,11 +53,13 @@ const Home = () => {
     var recieverId = user._id;
     var data = { recieverId, senderId, action: act };
     if (act == "liked") {
+      console.log("Entered liked");
       var socket = io("http://localhost:8003", {
         transports: ["websocket", "polling", "flashsocket"],
       });
-      socket.emit("Notify", (user) => {
+      socket.emit("Notify", ({ user }) => {
         // For Msg Notification
+        console.log("Entered emit");
         console.log(user);
       });
     }

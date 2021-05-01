@@ -38,7 +38,6 @@ function App() {
       transports: ["websocket", "polling", "flashsocket"],
     });
     socket2.on("MutualNotify", (mutual) => {
-      console.log("2");
       openNotification();
     });
   }, []);
