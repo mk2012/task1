@@ -16,6 +16,7 @@ import Home from "./views/LandingPage/Home";
 import LikedProfiles from "../components/views/Profile/LikedProfiles";
 import Mutual from "../components/views/Profile/Mutual";
 import ChatPage from "../components/views/Message/ChatPage";
+import UserNotifications from "./views/LandingPage/Notifications";
 
 //null   Anyone Can go inside
 //true   only logged in user can go inside
@@ -33,26 +34,8 @@ function App() {
     socket.on("notification", (msg) => {
       message.success("New message", msg.message);
     });
-
-    var socket2 = io("http://localhost:8003", {
-      transports: ["websocket", "polling", "flashsocket"],
-    });
-    socket2.on("MutualNotify", (mutual) => {
-      openNotification();
-    });
   }, []);
 
-  const openNotification = () => {
-    notification.open({
-      message: "New Mutual Liked Profile",
-      description:
-        "You have new Mutually Liked Profile.See who it is! Start Chatting...",
-      className: "custom-class",
-      style: {
-        width: 600,
-      },
-    });
-  };
   return (
     <Suspense fallback={<div>Loading...</div>}>
       <NavBar />
@@ -65,6 +48,10 @@ function App() {
           <Route path="/myprofile" component={Auth(ProfilePage, false)} />
           <Route path="/chats" component={Auth(ChatPage, false)} />
           <Route path="/mutualprofile" component={Auth(Mutual, false)} />
+          <Route
+            path="/notifications"
+            component={Auth(UserNotifications, false)}
+          />
           <Route path="/home" component={Auth(Home, false)} />
           {!isloggedin ? (
             <Route path="/" component={Auth(LandingPage, false)} />

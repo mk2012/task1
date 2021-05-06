@@ -12,14 +12,18 @@ const Home = () => {
   const [userData, setUserData] = useState([]);
   const [dislikeduserData, setDisLikedUserData] = useState([]);
 
+  // get registered users
   const getUsers = async () => {
     const id = localStorage.getItem("userId");
     await axios.get(`${USER_SERVER}/users?userId=${id}`).then((res) => {
-      setUserData(res.data);
-      getDislikedUsers();
+      if (res.data) {
+        setUserData(res.data);
+        getDislikedUsers();
+      }
     });
   };
 
+  //get current user's name
   const getName = async () => {
     const id = localStorage.getItem("userId");
     let response = await axios.get(`${USER_SERVER}/myprofile/${id}`);
@@ -27,6 +31,7 @@ const Home = () => {
     setName(response);
   };
 
+  // get disliked users
   const getDislikedUsers = async () => {
     const id = localStorage.getItem("userId");
     await axios
@@ -47,28 +52,60 @@ const Home = () => {
     // getDislikedUsers();
   }, []);
 
+  //checking Mutual exists or not
+
+  const checkMutual = async (user) => {
+    let id = localStorage.getItem("userId");
+    let recieverId = user._id;
+    await axios
+      .get(
+        `${USER_SERVER}/checkmutualprofile?userId=${id}&recieverId=${recieverId}`
+      )
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.length !== 0) {
+          sendLikeNotification(user);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const sendLikeNotification = async (user) => {
+    let id = localStorage.getItem("userId");
+    let recieverId = user._id;
+    let userName = user.name;
+    let currentUserName = name;
+    var data = {
+      userName,
+      currentUserName,
+    };
+    await axios
+      .post(
+        `${USER_SERVER}/notifications?senderId=${id}&recieverId=${recieverId}`,
+        data
+      )
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   // Store like/dislike
   const sendId = async (user, act) => {
     const senderId = localStorage.getItem("userId");
     var recieverId = user._id;
     var data = { recieverId, senderId, action: act };
-    if (act == "liked") {
-      console.log("Entered liked");
-      var socket = io("http://localhost:8003", {
-        transports: ["websocket", "polling", "flashsocket"],
-      });
-      socket.emit("Notify", ({ user }) => {
-        // For Msg Notification
-        console.log("Entered emit");
-        console.log(user);
-      });
-    }
+
     await axios
       .post(`${USER_SERVER}/useraction/`, data)
       .then((res) => {
         console.log(res.data);
         getUsers();
-        // getDislikedUsers();
+        checkMutual(user);
       })
       .catch((err) => {
         console.log(err);
@@ -76,9 +113,9 @@ const Home = () => {
       });
   };
 
-  useEffect(() => {
-    console.log(userData);
-  }, [userData]);
+  // useEffect(() => {
+  //   console.log(userData);
+  // }, [userData]);
   return (
     <div>
       <div style={{ textAlign: "center", marginTop: "30px" }}>
@@ -107,7 +144,7 @@ const Home = () => {
           //       sendId={(user, action) => sendId(user, action)}
           //     />
           //   ) : (
-          <div>No Users Found</div>
+          <div>No New Users Found</div>
           //   )}
           // </div>
         )}

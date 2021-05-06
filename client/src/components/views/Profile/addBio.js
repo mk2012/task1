@@ -13,6 +13,7 @@ function AddBio() {
 
   let history = useHistory();
 
+  //send bio to db
   const handleSubmit = () => {
     // history.push({
     //   pathname: "/myprofile",

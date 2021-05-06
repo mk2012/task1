@@ -59,6 +59,7 @@ const ChatPage = () => {
       });
   };
 
+  //send messages to database
   const handleSubmit = () => {
     const id = localStorage.getItem("userId");
     var socket = io("http://localhost:8002", {

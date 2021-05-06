@@ -49,6 +49,11 @@ io.on("connection", (socket) => {
     );
     io.emit("joined", newRoom._id);
   });
+  // io.on("connection", (socket) => {
+  //   socket.on("Notify", (mutual) => {
+  //     io.emit("MutualNotify", mutual);
+  //   });
+  // });
   socket.on("message", async ({ message, roomId, userId }) => {
     var message = new Message({
       message: message,

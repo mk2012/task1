@@ -44,6 +44,9 @@ const userSchema = mongoose.Schema({
   priority: {
     type: Number,
   },
+  notifications: {
+    type: Array,
+  },
 });
 
 userSchema.pre("save", function (next) {

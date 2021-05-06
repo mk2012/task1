@@ -13,29 +13,30 @@ const DisplayProfile = ({
   mutualLiked,
   onClickMessage,
   mutual,
+  removeProfile,
 }) => {
   const history = useHistory();
-  const removeProfile = async (user, mutual) => {
-    await axios
-      .delete(`${USER_SERVER}/useraction?userId=${id}&deletedId=${user?._id}`)
-      .then((res) => {
-        console.log(res.data);
-        message.success("Profile removed");
-        history.push("/myprofile");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-    if (mutual !== undefined)
-      await axios
-        .delete(`${USER_SERVER}/mutualprofile?mutualProfileId=${mutual._id}`)
-        .then((res) => {
-          console.log(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-  };
+  // const removeProfile = async (user, mutual) => {
+  //   await axios
+  //     .delete(`${USER_SERVER}/useraction?userId=${id}&deletedId=${user?._id}`)
+  //     .then((res) => {
+  //       console.log(res.data);
+  //       message.success("Profile removed");
+  //       history.push("/myprofile");
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  //   if (mutual !== undefined)
+  //     await axios
+  //       .delete(`${USER_SERVER}/mutualprofile?mutualProfileId=${mutual._id}`)
+  //       .then((res) => {
+  //         console.log(res.data);
+  //       })
+  //       .catch((err) => {
+  //         console.log(err);
+  //       });
+  // };
 
   return (
     <div className="home-profile-container" key={user?._id}>

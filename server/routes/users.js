@@ -5,6 +5,7 @@ const { UserAction } = require("../models/UserAction");
 const { MutualProfiles } = require("../models/Mutual");
 
 const { auth } = require("../middleware/auth");
+const { runInContext } = require("vm");
 const socketServer = require("http").createServer(router);
 const io = require("socket.io")(socketServer);
 
@@ -83,6 +84,7 @@ router.get("/users/:id", async (req, res) => {
         success: true,
         token: user.token,
         image: user.image,
+        notifications: user.notifications,
       });
     } else {
       res.status(404);
@@ -181,13 +183,39 @@ router.post("/useraction/", async (req, res) => {
         });
 
         mutual.save();
-        if (mutual) {
-          io.on("connection", (socket) => {
-            socket.on("Notify", (user) => {
-              io.emit("MutualNotify", mutual);
-            });
-          });
-        }
+
+        // snd notification response
+
+        // router.post("/notifications", async (req, res) => {
+        //   let senderId = req.query.senderId;
+        //   let recieverId = req.query.recieverId;
+        //   console.log("entered");
+        //   let name = req.body.name;
+        //   let currentUserName = req.body.currentUserName;
+        //   try {
+        //     const user = await User.findById(senderId);
+        //     user
+        //       .updateOne({
+        //         $push: { notifications: `New Mutual Profile ${name}` },
+        //       })
+        //       .exec();
+        //     user.save();
+        //     console.log("saved");
+        //     const user2 = await User.findById(recieverId);
+        //     user2
+        //       .updateOne({
+        //         $push: {
+        //           notifications: `New Mutual Profile ${currentUserName}`,
+        //         },
+        //       })
+        //       .exec();
+        //     user2.save();
+        //     res.json(user.notifications);
+        //     // console.log(user2);
+        //   } catch (err) {
+        //     console.log(err);
+        //   }
+        // });
       }
     }
     var alreadydisliked = await UserAction.findOne({
@@ -225,6 +253,58 @@ router.post("/useraction/", async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     return res.json({ success: false, err });
+  }
+});
+
+// Notifications
+
+router.post("/notifications", async (req, res) => {
+  let senderId = req.query.senderId;
+  let recieverId = req.query.recieverId;
+  let { userName, currentUserName } = req.body;
+
+  try {
+    const user = await User.findById(senderId);
+    user
+      .updateOne({
+        $push: { notifications: `New Mutual Profile ${userName}` },
+      })
+      .exec();
+    user.save();
+    const user2 = await User.findById(recieverId);
+    user2
+      .updateOne({
+        $push: {
+          notifications: `New Mutual Profile ${currentUserName}`,
+        },
+      })
+      .exec();
+    user2.save();
+    res.json(user.notifications);
+    // console.log(user2);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// Get Notifications
+
+router.get("/notifications", async (req, res) => {
+  let senderId = req.query.senderId;
+
+  try {
+    const user = await User.findById(senderId);
+    let notification = user.notifications;
+    let blank = [];
+    res.json(notification);
+    await user
+      .updateOne({
+        notifications: blank,
+      })
+      .exec();
+    user.save();
+  } catch (err) {
+    console.log(err);
   }
 });
 
@@ -266,6 +346,31 @@ router.get("/dislikedprofile/", async (req, res) => {
     return res.status(200).json(profiles);
   } catch (err) {
     return res.json({ success: false, err });
+  }
+});
+
+//check Mutual
+
+router.get("/checkmutualprofile", async (req, res) => {
+  let currentUserId = req.query.userId;
+  let recieverId = req.query.recieverId;
+  var mutual = await MutualProfiles.findOne({
+    user1: currentUserId,
+    user2: recieverId,
+  });
+  var mutual2 = await MutualProfiles.findOne({
+    user1: recieverId,
+    user2: currentUserId,
+  });
+  if (mutual.length !== 0) {
+    return res.json(mutual);
+  }
+  if (mutual2.length !== 0) {
+    return res.json(mutual2);
+  }
+
+  if (mutual.length == 0 && mutual2.length == 0) {
+    return res.status(404).json({ success: false });
   }
 });
 
@@ -315,8 +420,6 @@ router.delete("/mutualprofile", async (req, res) => {
   return res.status(200).json({ success: true });
 });
 
-// image upload
-
 //Logout
 router.get("/logout", auth, (req, res) => {
   User.findOneAndUpdate(
@@ -332,7 +435,7 @@ router.get("/logout", auth, (req, res) => {
 });
 
 socketServer.listen(8003, () => {
-  console.log("8003 connected");
+  // console.log("8003 connected");
 });
 
 module.exports = router;

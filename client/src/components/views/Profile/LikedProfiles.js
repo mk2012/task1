@@ -7,21 +7,23 @@ import { message } from "antd";
 const LikedProfiles = () => {
   const [likedprofiles, setLikedProfiles] = useState([]);
   useEffect(() => {
-    const id = localStorage.getItem("userId");
-    const getLikedProfiles = async () => {
-      await axios
-        .get(`${USER_SERVER}/useraction?userId=${id}`)
-        .then((res) => {
-          setLikedProfiles(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
-
     getLikedProfiles();
   }, []);
 
+  //get liked profiles from db
+  const getLikedProfiles = async () => {
+    const id = localStorage.getItem("userId");
+    await axios
+      .get(`${USER_SERVER}/useraction?userId=${id}`)
+      .then((res) => {
+        setLikedProfiles(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // sending liked/disliked profile to db
   const sendId = async (user, act) => {
     const senderId = localStorage.getItem("userId");
     var recieverId = user.likedFor;
@@ -31,6 +33,21 @@ const LikedProfiles = () => {
       .then((res) => {
         message.success("Added to Favourites");
         console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  // delete Profile from liked users
+  const removeProfile = async (user) => {
+    const id = localStorage.getItem("userId");
+    await axios
+      .delete(`${USER_SERVER}/useraction?userId=${id}&deletedId=${user?._id}`)
+      .then((res) => {
+        console.log(res.data);
+        message.success("Profile removed");
+        getLikedProfiles();
       })
       .catch((err) => {
         console.log(err);
@@ -57,6 +74,7 @@ const LikedProfiles = () => {
               likedProfile={true}
               user={user.likedFor}
               sendId={(user, action) => sendId(user, action)}
+              removeProfile={(user) => removeProfile(user)}
             />
           </div>
         );

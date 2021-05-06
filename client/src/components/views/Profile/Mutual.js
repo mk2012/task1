@@ -3,6 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { CHAT_SERVER, USER_SERVER } from "../../../components/Config";
 import DisplayProfile from "../../DisplayProfile";
+import { message } from "antd";
 import io from "socket.io-client";
 import { useHistory } from "react-router";
 
@@ -26,6 +27,7 @@ const Mutual = () => {
     });
   }, []);
 
+  //get msg from db
   const handleClickMessage = (receiverId, mutualId) => {
     const id = localStorage.getItem("userId");
     var socket = io("http://localhost:8002", {
@@ -45,6 +47,7 @@ const Mutual = () => {
     // });
   };
 
+  // get mutually liked profiles from db
   const getMutualProfiles = async () => {
     var id = localStorage.getItem("userId");
     await axios
@@ -56,6 +59,30 @@ const Mutual = () => {
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  // remove mutual liked profile
+  const removeProfile = async (user, mutual) => {
+    const id = localStorage.getItem("userId");
+    await axios
+      .delete(`${USER_SERVER}/useraction?userId=${id}&deletedId=${user?._id}`)
+      .then((res) => {
+        console.log(res.data);
+        message.success("Profile removed");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    if (mutual !== undefined)
+      await axios
+        .delete(`${USER_SERVER}/mutualprofile?mutualProfileId=${mutual._id}`)
+        .then((res) => {
+          console.log(res.data);
+          history.push("/home");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
   };
 
   return (
@@ -78,6 +105,7 @@ const Mutual = () => {
                 }
                 mutual={mutual}
                 likedProfile={true}
+                removeProfile={(user, mutual) => removeProfile(user, mutual)}
                 mutualLiked={true}
                 onClickMessage={(userId) =>
                   handleClickMessage(userId, mutual._id)
